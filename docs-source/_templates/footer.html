@@ -1,0 +1,8 @@
+{% extends '!footer.html' %}
+{% block extrafooter %}
+{{super()}}
+<div>
+    Code is available on <a href="https://github.com/{{github_user}}/{{github_repo}}">https://github.com/{{github_user}}/{{github_repo}}</a>
+</div>
+<!-- your html code here -->
+{% endblock %}
