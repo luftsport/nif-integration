@@ -48,11 +48,9 @@ Start synchronization workers::
 
 .. toctree::
    :maxdepth: 1
-   :caption: Api
+   :caption: Eve Api
 
    eve_api
-   nif_api
-   typings
 
 
 .. toctree::
@@ -62,6 +60,9 @@ Start synchronization workers::
    app_logger
    organizations
    reset_api
+   streamfix
+   geocoding
+   decorators
 
 .. toctree::
    :maxdepth: 1
