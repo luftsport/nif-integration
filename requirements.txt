@@ -46,7 +46,7 @@ python-dateutil==2.7.3
 pytz==2018.5
 pyzmq==17.1.2
 ratelim==0.1.6
-requests==2.19.1
+requests==2.20.0
 requests-toolbelt==0.8.0
 serpent==1.27
 simplegeneric==0.8.1
