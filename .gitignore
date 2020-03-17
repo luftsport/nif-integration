@@ -1,3 +1,4 @@
+docs/
 eve_api/client.py
 eve_api/document.py
 eve_api/integration_changes.py
