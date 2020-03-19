@@ -16,7 +16,9 @@ help:
 gh-pages:
 
 	@if [[ -z $$(git status -s) ]]; then sphinx-build -b html $(SOURCEDIR) $(BUILDDIR); git checkout gh-pages; else echo "[!!] Git repo is not clean, commit your changes"; git status; exit 1; fi;
-	@if [[ $$(git branch | grep "*" | sed "s/\* //") == "gh-pages" ]]; then git ls-files --other --exclude-standard -z | xargs -0 rm -f; git reset HEAD; cp -ar $(BUILDDIR)/* .; git add -A; git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout master; else echo "[!!] Not on gh-pages branch"; exit 2; fi;
+	@if [[ $$(git branch | grep "*" | sed "s/\* //") == "gh-pages" ]]; then git ls-files --other --exclude-standard -z | xargs -0 rm -f; git reset HEAD; cp -ar $(BUILDDIR)/* .; 
+git add -A; git commit -m "Generated gh-pages for `git log master -1 --pretty=short --abbrev-commit`" && git push origin gh-pages ; git checkout develop; else echo "[!!] Not on 
+gh-pages branch"; exit 2; fi;
 	@echo done
 
 
