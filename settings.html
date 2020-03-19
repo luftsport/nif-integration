@@ -1,0 +1,268 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>settings module &mdash; NIF Integration 1.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> NIF Integration
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sync &amp; stream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">integration module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syncdaemon.html">syncdaemon module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sync.html">sync module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stream.html">stream module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Eve Api</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="eve_api.html">eve_api package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="app_logger.html">app_logger module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="organizations.html">organizations module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reset_api.html">reset_api module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="streamfix.html">streamfix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geocoding.html">geocoding module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="decorators.html">decorators module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Settings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="settings-default.html">settings-default module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NIF Integration</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>settings module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-settings">
+<span id="settings-module"></span><h1>settings module<a class="headerlink" href="#module-settings" title="Permalink to this headline">¶</a></h1>
+<div class="topic">
+<p class="topic-title">Configuration of NIF realm.
+* DST
+* PROD</p>
+<p>Insert a new club:</p>
+</div>
+<p>import json
+from eve_api import EveJSONEncoder
+from settings import API_URL, API_HEADERS
+import requests
+#USE REBUILD API
+from nif_api import NifApiIntegration
+t = NifApiIntegration(‘5294/28154416/IGNLF5294-214063’, ‘MCxfAwXW51hc’)
+c = t.get_organization(512430, NLF_ORG_STRUCTURE)</p>
+<blockquote>
+<div><p>post = requests.post(‘{0}/organizations/process’.format(API_URL),data=json.dumps(c[1], cls=EveJSONEncoder),headers=API_HEADERS)</p>
+</div></blockquote>
+<dl class="data">
+<dt id="settings.API_HEADERS">
+<code class="sig-prename descclassname">settings.</code><code class="sig-name descname">API_HEADERS</code><em class="property"> = {'Accept': 'application/json', 'Accept-Encoding': 'gzip, deflate, br', 'Authorization': 'Basic NzE5MGMxOWRjMTYzNDBmMDg2ZTNmMzE0OWQxODRmOWI6', 'Content-Type': 'application/json'}</em><a class="headerlink" href="#settings.API_HEADERS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="settings.LOCAL_TIMEZONE">
+<code class="sig-prename descclassname">settings.</code><code class="sig-name descname">LOCAL_TIMEZONE</code><em class="property"> = 'UTC'</em><a class="headerlink" href="#settings.LOCAL_TIMEZONE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="settings.NIF_USER_URL">
+<code class="sig-prename descclassname">settings.</code><code class="sig-name descname">NIF_USER_URL</code><em class="property"> = 'https://services.nif.no/v4ws/UserService.svc?wsdl'</em><a class="headerlink" href="#settings.NIF_USER_URL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="settings.RPC_SERVICE_PORT">
+<code class="sig-prename descclassname">settings.</code><code class="sig-name descname">RPC_SERVICE_PORT</code><em class="property"> = 5555</em><a class="headerlink" href="#settings.RPC_SERVICE_PORT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="settings.STREAM_LOG_FILE">
+<code class="sig-prename descclassname">settings.</code><code class="sig-name descname">STREAM_LOG_FILE</code><em class="property"> = 'nif_stream_integration_PROD.log'</em><a class="headerlink" href="#settings.STREAM_LOG_FILE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="settings.ZEEP_EXCEPTIONS">
+<code class="sig-prename descclassname">settings.</code><code class="sig-name descname">ZEEP_EXCEPTIONS</code><em class="property"> = ['Error', 'Fault', 'IncompleteMessage', 'IncompleteOperation', 'LookupError', 'NamespaceError', 'SignatureVerificationFailed', 'TransportError', 'UnexpectedElementError', 'ValidationError', 'WsdlSyntaxError', 'XMLParseError', 'XMLSyntaxError', 'ZeepWarning']</em><a class="headerlink" href="#settings.ZEEP_EXCEPTIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/luftsport/nif-integration">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright Norges Luftsportforbund
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+ 
+<div>
+    Code is available on <a href="https://github.com/luftsport/nif-integration">https://github.com/luftsport/nif-integration</a>
+</div>
+<!-- your html code here -->
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

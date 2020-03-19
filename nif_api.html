@@ -1,0 +1,536 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nif_api package &mdash; NIF Integration 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="typings package" href="typings.html" />
+    <link rel="prev" title="eve_api package" href="eve_api.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> NIF Integration
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sync &amp; stream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="integration.html">integration module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="syncdaemon.html">syncdaemon module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sync.html">sync module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="stream.html">stream module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Api</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="eve_api.html">eve_api package</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">nif_api package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nif_api.api">nif_api.api module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nif_api.logger">nif_api.logger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-nif_api">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="typings.html">typings package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="app_logger.html">app_logger module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="organizations.html">organizations module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="reset_api.html">reset_api module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Settings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="settings-default.html">settings-default module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">NIF Integration</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>nif_api package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <div class="section" id="nif-api-package">
+<h1>nif_api package<a class="headerlink" href="#nif-api-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-nif_api.api">
+<span id="nif-api-api-module"></span><h2>nif_api.api module<a class="headerlink" href="#module-nif_api.api" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="nif_api.api.NIFApiAuthenticationError">
+<em class="property">exception </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NIFApiAuthenticationError</code><a class="reference internal" href="_modules/nif_api/api.html#NIFApiAuthenticationError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NIFApiAuthenticationError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NIFApiError" title="nif_api.api.NIFApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NIFApiError</span></code></a></p>
+<p>Authentication Error</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="nif_api.api.NIFApiConnectionError">
+<em class="property">exception </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NIFApiConnectionError</code><a class="reference internal" href="_modules/nif_api/api.html#NIFApiConnectionError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NIFApiConnectionError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NIFApiError" title="nif_api.api.NIFApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NIFApiError</span></code></a></p>
+<p>Connection Error</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="nif_api.api.NIFApiError">
+<em class="property">exception </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NIFApiError</code><a class="reference internal" href="_modules/nif_api/api.html#NIFApiError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NIFApiError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Base class</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="nif_api.api.NIFApiNotImplementedError">
+<em class="property">exception </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NIFApiNotImplementedError</code><a class="reference internal" href="_modules/nif_api/api.html#NIFApiNotImplementedError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NIFApiNotImplementedError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NIFApiError" title="nif_api.api.NIFApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NIFApiError</span></code></a></p>
+<p>Connection Error</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="nif_api.api.NIFApiRealmError">
+<em class="property">exception </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NIFApiRealmError</code><a class="reference internal" href="_modules/nif_api/api.html#NIFApiRealmError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NIFApiRealmError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NIFApiError" title="nif_api.api.NIFApiError"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NIFApiError</span></code></a></p>
+<p>Realm Error</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApi">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApi</code><span class="sig-paren">(</span><em class="sig-param">realm</em>, <em class="sig-param">local_timezone='UTC'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Uses zeep to get data from NIF API
+Will make all datefields timezone aware</p>
+<p>&#64;TODO implement client in NifApi. Then Hello test is reusable</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiCompetence">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiCompetence</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiCompetence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiCompetence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<dl class="method">
+<dt id="nif_api.api.NifApiCompetence.get_competece_type">
+<code class="sig-name descname">get_competece_type</code><span class="sig-paren">(</span><em class="sig-param">type_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiCompetence.get_competece_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiCompetence.get_competece_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>competence type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiCompetence.get_competence">
+<code class="sig-name descname">get_competence</code><span class="sig-paren">(</span><em class="sig-param">competence_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiCompetence.get_competence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiCompetence.get_competence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiCourse2">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiCourse2</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiCourse2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiCourse2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<dl class="method">
+<dt id="nif_api.api.NifApiCourse2.get_course">
+<code class="sig-name descname">get_course</code><span class="sig-paren">(</span><em class="sig-param">course_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiCourse2.get_course"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiCourse2.get_course" title="Permalink to this definition">¶</a></dt>
+<dd><p>&#64;TODO No access</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiIntegration">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiIntegration</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_activities">
+<code class="sig-name descname">get_activities</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_activities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_activities" title="Permalink to this definition">¶</a></dt>
+<dd><p>No access!
+resp = self.client.service.ActivitiesGetAll</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_competence">
+<code class="sig-name descname">get_competence</code><span class="sig-paren">(</span><em class="sig-param">competence_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_competence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_competence" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_counties">
+<code class="sig-name descname">get_counties</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_counties"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_counties" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns all counties</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_countries">
+<code class="sig-name descname">get_countries</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_countries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_countries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_function">
+<code class="sig-name descname">get_function</code><span class="sig-paren">(</span><em class="sig-param">function_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_function" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_function_details">
+<code class="sig-name descname">get_function_details</code><span class="sig-paren">(</span><em class="sig-param">function_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_function_details"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_function_details" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not anything we need?
+resp = self.client.service.FunctionDetailsGet</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_function_types">
+<code class="sig-name descname">get_function_types</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_function_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_function_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_license">
+<code class="sig-name descname">get_license</code><span class="sig-paren">(</span><em class="sig-param">license_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_license"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_license" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only forbundsuser</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_licenses_status">
+<code class="sig-name descname">get_licenses_status</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_licenses_status"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_licenses_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all those statuses</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_licenses_types">
+<code class="sig-name descname">get_licenses_types</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_licenses_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_licenses_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Only forbundsuser</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_org_logo">
+<code class="sig-name descname">get_org_logo</code><span class="sig-paren">(</span><em class="sig-param">org_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'bytes'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_org_logo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_org_logo" title="Permalink to this definition">¶</a></dt>
+<dd><p>Note that OrgLogo is a bytesarray</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_organization">
+<code class="sig-name descname">get_organization</code><span class="sig-paren">(</span><em class="sig-param">organization_id</em>, <em class="sig-param">org_structure) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_organization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_organization" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_organization_types">
+<code class="sig-name descname">get_organization_types</code><span class="sig-paren">(</span><em class="sig-param">) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'list'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_organization_types"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_organization_types" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiIntegration.get_person">
+<code class="sig-name descname">get_person</code><span class="sig-paren">(</span><em class="sig-param">person_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'dict'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiIntegration.get_person"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiIntegration.get_person" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiPayments">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiPayments</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiPayments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiPayments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<p>Uses club user</p>
+<dl class="method">
+<dt id="nif_api.api.NifApiPayments.get_payment">
+<code class="sig-name descname">get_payment</code><span class="sig-paren">(</span><em class="sig-param">payment_id</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiPayments.get_payment"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiPayments.get_payment" title="Permalink to this definition">¶</a></dt>
+<dd><p>payment GetPaymentDetailsById og GetPaymentDetailsByIds</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiPayments.get_payments">
+<code class="sig-name descname">get_payments</code><span class="sig-paren">(</span><em class="sig-param">payment_ids</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiPayments.get_payments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiPayments.get_payments" title="Permalink to this definition">¶</a></dt>
+<dd><p>payment GetPaymentDetailsById og GetPaymentDetailsByIds</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiPerson">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiPerson</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiPerson"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiPerson" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<dl class="method">
+<dt id="nif_api.api.NifApiPerson.login">
+<code class="sig-name descname">login</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiPerson.login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiPerson.login" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiSynchronization">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiSynchronization</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<dl class="method">
+<dt id="nif_api.api.NifApiSynchronization.create_integration_user">
+<code class="sig-name descname">create_integration_user</code><span class="sig-paren">(</span><em class="sig-param">prefix</em>, <em class="sig-param">club_id</em>, <em class="sig-param">club_username_prefix</em>, <em class="sig-param">club_firstname_prefix</em>, <em class="sig-param">password</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization.create_integration_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization.create_integration_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiSynchronization.get_changes">
+<code class="sig-name descname">get_changes</code><span class="sig-paren">(</span><em class="sig-param">start_date</em>, <em class="sig-param">end_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization.get_changes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization.get_changes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes on person, organization and function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiSynchronization.get_changes_competence">
+<code class="sig-name descname">get_changes_competence</code><span class="sig-paren">(</span><em class="sig-param">start_date</em>, <em class="sig-param">end_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization.get_changes_competence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization.get_changes_competence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get changes on competence</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiSynchronization.get_changes_federation">
+<code class="sig-name descname">get_changes_federation</code><span class="sig-paren">(</span><em class="sig-param">start_date</em>, <em class="sig-param">end_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization.get_changes_federation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization.get_changes_federation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes on person, organization and function</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiSynchronization.get_changes_license">
+<code class="sig-name descname">get_changes_license</code><span class="sig-paren">(</span><em class="sig-param">start_date</em>, <em class="sig-param">end_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization.get_changes_license"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization.get_changes_license" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get changes on license, only forbundsuser</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiSynchronization.get_changes_payments">
+<code class="sig-name descname">get_changes_payments</code><span class="sig-paren">(</span><em class="sig-param">start_date</em>, <em class="sig-param">end_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiSynchronization.get_changes_payments"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiSynchronization.get_changes_payments" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get changes on payments club users</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="nif_api.api.NifApiUser">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.api.</code><code class="sig-name descname">NifApiUser</code><span class="sig-paren">(</span><em class="sig-param">username</em>, <em class="sig-param">password</em>, <em class="sig-param">realm</em>, <em class="sig-param">log_file</em>, <em class="sig-param">test_login=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiUser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiUser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#nif_api.api.NifApi" title="nif_api.api.NifApi"><code class="xref py py-class docutils literal notranslate"><span class="pre">nif_api.api.NifApi</span></code></a></p>
+<dl class="method">
+<dt id="nif_api.api.NifApiUser.get_person_id">
+<code class="sig-name descname">get_person_id</code><span class="sig-paren">(</span><em class="sig-param">buypass_id) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiUser.get_person_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiUser.get_person_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>competence type</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.api.NifApiUser.get_person_id_from_username">
+<code class="sig-name descname">get_person_id_from_username</code><span class="sig-paren">(</span><em class="sig-param">username) -&gt; (&lt;class 'bool'&gt;</em>, <em class="sig-param">&lt;class 'int'&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/api.html#NifApiUser.get_person_id_from_username"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.api.NifApiUser.get_person_id_from_username" title="Permalink to this definition">¶</a></dt>
+<dd><p>competence type</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-nif_api.logger">
+<span id="nif-api-logger-module"></span><h2>nif_api.logger module<a class="headerlink" href="#module-nif_api.logger" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="nif_api.logger.LoggingPlugin">
+<em class="property">class </em><code class="sig-prename descclassname">nif_api.logger.</code><code class="sig-name descname">LoggingPlugin</code><span class="sig-paren">(</span><em class="sig-param">file_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/logger.html#LoggingPlugin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.logger.LoggingPlugin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">zeep.plugins.Plugin</span></code></p>
+<p>A simple logging plugin for Zeep
+Will log all received (ingress) and sent (egress) messages</p>
+<dl class="method">
+<dt id="nif_api.logger.LoggingPlugin.egress">
+<code class="sig-name descname">egress</code><span class="sig-paren">(</span><em class="sig-param">envelope</em>, <em class="sig-param">http_headers</em>, <em class="sig-param">operation</em>, <em class="sig-param">binding_options</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/logger.html#LoggingPlugin.egress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.logger.LoggingPlugin.egress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to update the envelope or http headers when sending a
+message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>envelope</strong> – The envelope as XML node</p></li>
+<li><p><strong>http_headers</strong> – Dict with the HTTP headers</p></li>
+<li><p><strong>operation</strong> – The associated Operation instance</p></li>
+<li><p><strong>binding_options</strong> – Binding specific options for the operation</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="nif_api.logger.LoggingPlugin.ingress">
+<code class="sig-name descname">ingress</code><span class="sig-paren">(</span><em class="sig-param">envelope</em>, <em class="sig-param">http_headers</em>, <em class="sig-param">operation</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/nif_api/logger.html#LoggingPlugin.ingress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#nif_api.logger.LoggingPlugin.ingress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override to update the envelope or http headers when receiving a
+message.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>envelope</strong> – The envelope as XML node</p></li>
+<li><p><strong>http_headers</strong> – Dict with the HTTP headers</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-nif_api">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-nif_api" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/luftsport/nif-integration">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="typings.html" class="btn btn-neutral float-right" title="typings package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="eve_api.html" class="btn btn-neutral float-left" title="eve_api package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright Norges Luftsportforbund
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+ 
+<div>
+    Code is available on <a href="https://github.com/luftsport/nif-integration">https://github.com/luftsport/nif-integration</a>
+</div>
+<!-- your html code here -->
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

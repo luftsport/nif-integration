@@ -1,0 +1,860 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>nif_api.api &mdash; NIF Integration 1.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> NIF Integration
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Sync &amp; stream</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../integration.html">integration module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../syncdaemon.html">syncdaemon module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../sync.html">sync module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../stream.html">stream module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Eve Api</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../eve_api.html">eve_api package</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Tools</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../app_logger.html">app_logger module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../organizations.html">organizations module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../reset_api.html">reset_api module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../streamfix.html">streamfix module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../geocoding.html">geocoding module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../decorators.html">decorators module</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Settings</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../settings-default.html">settings-default module</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">NIF Integration</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>nif_api.api</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+
+           <div itemprop="articleBody">
+            
+  <h1>Source code for nif_api.api</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">zeep.exceptions</span>
+<span class="kn">from</span> <span class="nn">dateutil</span> <span class="kn">import</span> <span class="n">tz</span>
+<span class="kn">from</span> <span class="nn">zeep</span> <span class="kn">import</span> <span class="n">Client</span>
+<span class="kn">from</span> <span class="nn">zeep.wsse.username</span> <span class="kn">import</span> <span class="n">UsernameToken</span>
+<span class="kn">from</span> <span class="nn">zeep.transports</span> <span class="kn">import</span> <span class="n">Transport</span>
+
+<span class="kn">from</span> <span class="nn">.logger</span> <span class="kn">import</span> <span class="n">LoggingPlugin</span>
+<span class="kn">from</span> <span class="nn">.typings</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Changes</span><span class="p">,</span>
+                      <span class="n">Organizations</span><span class="p">,</span>
+                      <span class="n">Organization</span><span class="p">,</span>
+                      <span class="n">Persons</span><span class="p">,</span>
+                      <span class="n">Functions</span><span class="p">,</span>
+                      <span class="n">Competence</span><span class="p">,</span>
+                      <span class="n">Competences</span><span class="p">,</span>
+                      <span class="n">License</span><span class="p">,</span>
+                      <span class="n">Hello</span><span class="p">,</span>
+                      <span class="n">FunctionTypes</span><span class="p">,</span>
+                      <span class="n">Countries</span><span class="p">,</span>
+                      <span class="n">OrgLogo</span><span class="p">,</span>
+                      <span class="n">Counties</span><span class="p">,</span>
+                      <span class="n">LicensesStatus</span><span class="p">,</span>
+                      <span class="n">LicenseTypes</span><span class="p">,</span>
+                      <span class="n">Activities</span><span class="p">,</span>
+                      <span class="n">OrganizationTypes</span><span class="p">,</span>
+                      <span class="n">IntegrationUser</span><span class="p">)</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">@TODO Remove this</span>
+<span class="sd">from os import getcwd</span>
+<span class="sd">DEFAULT_REALM = &#39;PROD&#39;</span>
+<span class="sd">DEFAULT_LOG_FILE = &#39;{}/nif_api.log&#39;.format(getcwd())</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="NIFApiError"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NIFApiError">[docs]</a><span class="k">class</span> <span class="nc">NIFApiError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NIFApiNotImplementedError"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NIFApiNotImplementedError">[docs]</a><span class="k">class</span> <span class="nc">NIFApiNotImplementedError</span><span class="p">(</span><span class="n">NIFApiError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Connection Error&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NIFApiConnectionError"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NIFApiConnectionError">[docs]</a><span class="k">class</span> <span class="nc">NIFApiConnectionError</span><span class="p">(</span><span class="n">NIFApiError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Connection Error&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NIFApiAuthenticationError"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NIFApiAuthenticationError">[docs]</a><span class="k">class</span> <span class="nc">NIFApiAuthenticationError</span><span class="p">(</span><span class="n">NIFApiError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Authentication Error&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NIFApiRealmError"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NIFApiRealmError">[docs]</a><span class="k">class</span> <span class="nc">NIFApiRealmError</span><span class="p">(</span><span class="n">NIFApiError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Realm Error&quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="NifApi"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApi">[docs]</a><span class="k">class</span> <span class="nc">NifApi</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Uses zeep to get data from NIF API</span>
+<span class="sd">    Will make all datefields timezone aware</span>
+
+<span class="sd">    @TODO implement client in NifApi. Then Hello test is reusable</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">local_timezone</span><span class="o">=</span><span class="s1">&#39;UTC&#39;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        .. topic:: Timezone awareness</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">realm</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;DEV&#39;</span><span class="p">,</span> <span class="s1">&#39;DST&#39;</span><span class="p">,</span> <span class="s1">&#39;PROD&#39;</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">NIFApiRealmError</span>
+
+        <span class="k">if</span> <span class="n">realm</span> <span class="o">==</span> <span class="s1">&#39;PROD&#39;</span><span class="p">:</span>
+            <span class="n">nif_base_url</span> <span class="o">=</span> <span class="s1">&#39;https://services.nif.no/v4ws&#39;</span>
+        <span class="k">elif</span> <span class="n">realm</span> <span class="o">==</span> <span class="s1">&#39;DST&#39;</span><span class="p">:</span>
+            <span class="n">nif_base_url</span> <span class="o">=</span> <span class="s1">&#39;https://nswebdst.nif.no/v4ws&#39;</span>
+        <span class="k">elif</span> <span class="n">realm</span> <span class="o">==</span> <span class="s1">&#39;DEV&#39;</span><span class="p">:</span>
+            <span class="n">nif_base_url</span> <span class="o">=</span> <span class="s1">&#39;https://nswebdev.nif.no/v4ws&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">LOCAL_TIMEZONE</span> <span class="o">=</span> <span class="n">local_timezone</span>  <span class="c1"># &quot;Europe/Oslo&quot;  UTC</span>
+
+        <span class="c1"># NIF common url&#39;s</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_SYNC_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/SynchronizationService.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_INTEGRATION_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/IntegrationService.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_INTEGRATION_COMPETENCE_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/Competence2Service.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_COURSE2_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/Course2Service.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_PERSON_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/PersonService.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_USER_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/UserService.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">NIF_PAYMENT_URL</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/PaymentService.svc?wsdl&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">nif_base_url</span><span class="p">)</span> <span class="c1"># PaymentHistoryService.svc?wsdl</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s2">&quot;Europe/Oslo&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tz_utc</span> <span class="o">=</span> <span class="n">tz</span><span class="o">.</span><span class="n">gettz</span><span class="p">(</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;ErrorMessage&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">message</span> <span class="o">=</span> <span class="s1">&#39;Unknown&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;ErrorCode&#39;</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">code</span> <span class="o">=</span> <span class="mi">500</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="n">message</span><span class="p">,</span> <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="n">code</span><span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="NifApiSynchronization"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization">[docs]</a><span class="k">class</span> <span class="nc">NifApiSynchronization</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_SYNC_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="c1"># Sync client options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns4</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">type_factory</span><span class="p">(</span><span class="s1">&#39;ns4&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns5</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">type_factory</span><span class="p">(</span><span class="s1">&#39;ns5&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiSynchronization.get_changes"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization.get_changes">[docs]</a>    <span class="k">def</span> <span class="nf">get_changes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Changes on person, organization and function&quot;&quot;&quot;</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns4</span><span class="o">.</span><span class="n">SyncOptions</span><span class="p">(</span><span class="n">OrganizationTypes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns5</span><span class="o">.</span><span class="n">ArrayOfint</span><span class="p">([</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">14</span><span class="p">]),</span>
+                                       <span class="n">EntityTypes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns4</span><span class="o">.</span><span class="n">EntityTypes</span><span class="p">([</span><span class="s1">&#39;All&#39;</span><span class="p">]))</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetChanges3</span><span class="p">(</span><span class="n">Options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+                                               <span class="n">StartDate</span><span class="o">=</span><span class="n">start_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">),</span>
+                                               <span class="n">ToDate</span><span class="o">=</span><span class="n">end_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Changes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiSynchronization.get_changes_federation"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization.get_changes_federation">[docs]</a>    <span class="k">def</span> <span class="nf">get_changes_federation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Changes on person, organization and function&quot;&quot;&quot;</span>
+
+        <span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ns4</span><span class="o">.</span><span class="n">SyncOptions</span><span class="p">(</span><span class="n">OrganizationTypes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns5</span><span class="o">.</span><span class="n">ArrayOfint</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">19</span><span class="p">]),</span>
+                                       <span class="n">EntityTypes</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns4</span><span class="o">.</span><span class="n">EntityTypes</span><span class="p">([</span><span class="s1">&#39;Functions&#39;</span><span class="p">,</span> <span class="s1">&#39;Organizations&#39;</span><span class="p">]))</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetChanges3</span><span class="p">(</span><span class="n">Options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+                                               <span class="n">StartDate</span><span class="o">=</span><span class="n">start_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">),</span>
+                                               <span class="n">ToDate</span><span class="o">=</span><span class="n">end_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Changes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiSynchronization.get_changes_competence"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization.get_changes_competence">[docs]</a>    <span class="k">def</span> <span class="nf">get_changes_competence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get changes on competence&quot;&quot;&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetChangesCompetence2</span><span class="p">(</span><span class="n">FromDate</span><span class="o">=</span><span class="n">start_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">),</span>
+                                                         <span class="n">ToDate</span><span class="o">=</span><span class="n">end_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Changes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiSynchronization.get_changes_license"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization.get_changes_license">[docs]</a>    <span class="k">def</span> <span class="nf">get_changes_license</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get changes on license, only forbundsuser&quot;&quot;&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetChangesLicense</span><span class="p">(</span><span class="n">FromDate</span><span class="o">=</span><span class="n">start_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">),</span>
+                                                     <span class="n">ToDate</span><span class="o">=</span><span class="n">end_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Changes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiSynchronization.get_changes_payments"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization.get_changes_payments">[docs]</a>    <span class="k">def</span> <span class="nf">get_changes_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_date</span><span class="p">,</span> <span class="n">end_date</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get changes on payments club users&quot;&quot;&quot;</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetChangesPayment</span><span class="p">(</span><span class="n">FromDate</span><span class="o">=</span><span class="n">start_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">),</span>
+                                                     <span class="n">ToDate</span><span class="o">=</span><span class="n">end_date</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tz_local</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Changes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiSynchronization.create_integration_user"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiSynchronization.create_integration_user">[docs]</a>    <span class="k">def</span> <span class="nf">create_integration_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">club_id</span><span class="p">,</span> <span class="n">club_username_prefix</span><span class="p">,</span> <span class="n">club_firstname_prefix</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="c1"># The exception is caught in the call to _create.</span>
+
+        <span class="n">club_username</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">club_username_prefix</span><span class="p">,</span> <span class="n">club_id</span><span class="p">)</span>
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CreateIntegrationUser</span><span class="p">(</span><span class="n">FirstName</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">club_firstname_prefix</span><span class="p">,</span>
+                                                                                    <span class="n">club_id</span><span class="p">),</span>
+                                                         <span class="n">LastName</span><span class="o">=</span><span class="s1">&#39;NIF.Connect&#39;</span><span class="p">,</span>
+                                                         <span class="n">OrgId</span><span class="o">=</span><span class="n">club_id</span><span class="p">,</span>
+                                                         <span class="n">Password</span><span class="o">=</span><span class="n">password</span><span class="p">,</span>
+                                                         <span class="n">UserName</span><span class="o">=</span><span class="n">club_username</span><span class="p">)</span>
+        <span class="c1"># Email=None)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">IntegrationUser</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NifApiCompetence"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiCompetence">[docs]</a><span class="k">class</span> <span class="nc">NifApiCompetence</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_INTEGRATION_COMPETENCE_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="c1"># self.ns4 = self.client.type_factory(&#39;ns4&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ns6</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">type_factory</span><span class="p">(</span><span class="s1">&#39;ns6&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiCompetence.get_competence"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiCompetence.get_competence">[docs]</a>    <span class="k">def</span> <span class="nf">get_competence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">competence_id</span><span class="p">):</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CompetencesGet</span><span class="p">(</span><span class="n">CompetenceIds</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">ns6</span><span class="o">.</span><span class="n">ArrayOfint</span><span class="p">([</span><span class="n">competence_id</span><span class="p">]))</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">Competences</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">c</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">c</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;CompetenceExtended&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">competence</span> <span class="o">=</span> <span class="n">Competence</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">competence</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiCompetence.get_competece_type"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiCompetence.get_competece_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_competece_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;competence type&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CompetenceTypeGet</span><span class="p">(</span><span class="n">CompetenceTypeId</span><span class="o">=</span><span class="n">type_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;CompetenceType&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">competence</span> <span class="o">=</span> <span class="n">Competence</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">competence</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NifApiCourse2"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiCourse2">[docs]</a><span class="k">class</span> <span class="nc">NifApiCourse2</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_COURSE2_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiCourse2.get_course"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiCourse2.get_course">[docs]</a>    <span class="k">def</span> <span class="nf">get_course</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">course_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;@TODO No access&quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">course</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CourseGet</span><span class="p">(</span><span class="n">course_id</span><span class="p">)</span>
+
+            <span class="c1"># return True, Course(course).value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NifApiPerson"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiPerson">[docs]</a><span class="k">class</span> <span class="nc">NifApiPerson</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_PERSON_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiPerson.login"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiPerson.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">LoginPerson</span><span class="p">(</span><span class="n">Username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span> <span class="n">Password</span><span class="o">=</span><span class="n">password</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resp</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NifApiIntegration"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration">[docs]</a><span class="k">class</span> <span class="nc">NifApiIntegration</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_INTEGRATION_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiIntegration.get_competence"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_competence">[docs]</a>    <span class="k">def</span> <span class="nf">get_competence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">competence_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Use NifApiCompetence!&#39;</span><span class="p">)</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CompetenceGet</span><span class="p">(</span><span class="n">CompetenceId</span><span class="o">=</span><span class="n">competence_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;CompetenceExtended&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">competence</span> <span class="o">=</span> <span class="n">Competence</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">competence</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_person"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_person">[docs]</a>    <span class="k">def</span> <span class="nf">get_person</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">person_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+
+        <span class="n">factory1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">type_factory</span><span class="p">(</span><span class="s1">&#39;ns1&#39;</span><span class="p">)</span>
+        <span class="n">factory7</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">type_factory</span><span class="p">(</span><span class="s1">&#39;ns7&#39;</span><span class="p">)</span>
+        <span class="n">xsd</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">type_factory</span><span class="p">(</span><span class="s1">&#39;xsd&#39;</span><span class="p">)</span>
+
+        <span class="n">ids_request</span> <span class="o">=</span> <span class="n">factory7</span><span class="o">.</span><span class="n">ArrayOfint</span><span class="p">([</span><span class="n">xsd</span><span class="o">.</span><span class="n">int</span><span class="p">(</span><span class="n">person_id</span><span class="p">)])</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">PersonsGet</span><span class="p">(</span><span class="n">Ids</span><span class="o">=</span><span class="p">[</span><span class="n">ids_request</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;Persons&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">person</span> <span class="o">=</span> <span class="n">Persons</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>  <span class="c1"># resp[&#39;Persons&#39;][&#39;PersonPublic&#39;][0])))</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">person</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_function"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_function">[docs]</a>    <span class="k">def</span> <span class="nf">get_function</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">FunctionsGet</span><span class="p">(</span><span class="n">Ids</span><span class="o">=</span><span class="p">[</span><span class="n">function_id</span><span class="p">])</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;Functions&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+
+            <span class="n">func</span> <span class="o">=</span> <span class="n">Functions</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">func</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_function_types"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_function_types">[docs]</a>    <span class="k">def</span> <span class="nf">get_function_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">FunctionTypeGetAll</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]:</span>
+
+            <span class="n">types</span> <span class="o">=</span> <span class="n">FunctionTypes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_function_details"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_function_details">[docs]</a>    <span class="k">def</span> <span class="nf">get_function_details</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Not anything we need?</span>
+<span class="sd">        resp = self.client.service.FunctionDetailsGet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_organization"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_organization">[docs]</a>    <span class="k">def</span> <span class="nf">get_organization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">organization_id</span><span class="p">,</span> <span class="n">org_structure</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">OrgGet</span><span class="p">(</span><span class="n">OrgId</span><span class="o">=</span><span class="n">organization_id</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Organization</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">org_structure</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">OrganisationsGet</span><span class="p">(</span><span class="n">Ids</span><span class="o">=</span><span class="p">[</span><span class="n">organization_id</span><span class="p">])</span>
+                <span class="n">organization</span> <span class="o">=</span> <span class="n">Organizations</span><span class="p">(</span><span class="n">resp</span><span class="p">,</span> <span class="n">org_structure</span><span class="p">)</span>
+                <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">organization</span><span class="o">.</span><span class="n">value</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="p">{</span><span class="s1">&#39;error&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="s1">&#39;code&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_organization_types"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_organization_types">[docs]</a>    <span class="k">def</span> <span class="nf">get_organization_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">OrgTypesGetAll</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]:</span>
+
+            <span class="n">types</span> <span class="o">=</span> <span class="n">OrganizationTypes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">types</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_org_logo"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_org_logo">[docs]</a>    <span class="k">def</span> <span class="nf">get_org_logo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">org_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Note that OrgLogo is a bytesarray&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">OrgLogoGet</span><span class="p">(</span><span class="n">OrgId</span><span class="o">=</span><span class="n">org_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;OrgLogo&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">OrgLogo</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_license"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_license">[docs]</a>    <span class="k">def</span> <span class="nf">get_license</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">license_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Only forbundsuser&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">LicenseGet</span><span class="p">(</span><span class="n">LicenseId</span><span class="o">=</span><span class="n">license_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;License&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">lic</span> <span class="o">=</span> <span class="n">License</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">lic</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_licenses_types"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_licenses_types">[docs]</a>    <span class="k">def</span> <span class="nf">get_licenses_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Only forbundsuser&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">LicenseTypesGet</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;LicenseTypes&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">license_types</span> <span class="o">=</span> <span class="n">LicenseTypes</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">license_types</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_licenses_status"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_licenses_status">[docs]</a>    <span class="k">def</span> <span class="nf">get_licenses_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all those statuses&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">LicenseStatusesGet</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;LicenseStatuses&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">licenses_status</span> <span class="o">=</span> <span class="n">LicensesStatus</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">licenses_status</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_countries"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_countries">[docs]</a>    <span class="k">def</span> <span class="nf">get_countries</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CountriesGet</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;Countries&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="n">countries</span> <span class="o">=</span> <span class="n">Countries</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">countries</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_counties"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_counties">[docs]</a>    <span class="k">def</span> <span class="nf">get_counties</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns all counties&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">CountiesGet</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;Regions&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Counties</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiIntegration.get_activities"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiIntegration.get_activities">[docs]</a>    <span class="k">def</span> <span class="nf">get_activities</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;No access!</span>
+<span class="sd">        resp = self.client.service.ActivitiesGetAll</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">ActivitiesGetAll</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;Activities&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Activities</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="NifApiUser"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiUser">[docs]</a><span class="k">class</span> <span class="nc">NifApiUser</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_USER_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiUser.get_person_id"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiUser.get_person_id">[docs]</a>    <span class="k">def</span> <span class="nf">get_person_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buypass_id</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;competence type&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetPersonIdByBuypassId</span><span class="p">(</span><span class="n">BuypassId</span><span class="o">=</span><span class="n">buypass_id</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;PersonId&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;PersonId&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiUser.get_person_id_from_username"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiUser.get_person_id_from_username">[docs]</a>    <span class="k">def</span> <span class="nf">get_person_id_from_username</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;competence type&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetPersonIdByUsername</span><span class="p">(</span><span class="n">BuypassId</span><span class="o">=</span><span class="n">username</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;PersonId&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;PersonId&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="NifApiPayments"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiPayments">[docs]</a><span class="k">class</span> <span class="nc">NifApiPayments</span><span class="p">(</span><span class="n">NifApi</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Uses club user&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">realm</span><span class="p">,</span> <span class="n">log_file</span><span class="p">,</span> <span class="n">test_login</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">realm</span><span class="p">)</span>
+        <span class="n">transport</span> <span class="o">=</span> <span class="n">Transport</span><span class="p">(</span><span class="n">timeout</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span> <span class="o">=</span> <span class="n">Client</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">NIF_PAYMENT_URL</span><span class="p">,</span>
+                             <span class="n">wsse</span><span class="o">=</span><span class="n">UsernameToken</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">),</span>
+                             <span class="n">plugins</span><span class="o">=</span><span class="p">[</span><span class="n">LoggingPlugin</span><span class="p">(</span><span class="n">log_file</span><span class="p">)],</span>
+                             <span class="n">transport</span><span class="o">=</span><span class="n">transport</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">test_login</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="n">state</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_test</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">NIFApiAuthenticationError</span><span class="p">(</span><span class="s1">&#39;Could not authenticate via test&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_test</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">hello</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">Hello</span><span class="p">()</span>
+
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">Hello</span><span class="p">(</span><span class="n">hello</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="k">except</span> <span class="n">zeep</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Fault</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NifApiPayments.get_payment"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiPayments.get_payment">[docs]</a>    <span class="k">def</span> <span class="nf">get_payment</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payment_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;payment GetPaymentDetailsById og GetPaymentDetailsByIds&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetPaymentDetailsById</span><span class="p">(</span><span class="n">payment_id</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;PersonId&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;PersonId&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="NifApiPayments.get_payments"><a class="viewcode-back" href="../../nif_api.html#nif_api.api.NifApiPayments.get_payments">[docs]</a>    <span class="k">def</span> <span class="nf">get_payments</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">payment_ids</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;payment GetPaymentDetailsById og GetPaymentDetailsByIds&quot;&quot;&quot;</span>
+
+        <span class="n">resp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">service</span><span class="o">.</span><span class="n">GetPaymentDetailsByIds</span><span class="p">(</span><span class="n">payment_ids</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">resp</span>
+
+        <span class="k">if</span> <span class="s1">&#39;Success&#39;</span> <span class="ow">in</span> <span class="n">resp</span> <span class="ow">and</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;Success&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">True</span> <span class="ow">and</span> <span class="s1">&#39;PersonId&#39;</span> <span class="ow">in</span> <span class="n">resp</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">True</span><span class="p">,</span> <span class="n">resp</span><span class="p">[</span><span class="s1">&#39;PersonId&#39;</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_error_wrapper</span><span class="p">(</span><span class="n">resp</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+    <a href="https://github.com/luftsport/nif-integration">
+        <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub">
+    </a>
+
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright Norges Luftsportforbund
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+ 
+<div>
+    Code is available on <a href="https://github.com/luftsport/nif-integration">https://github.com/luftsport/nif-integration</a>
+</div>
+<!-- your html code here -->
+
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
