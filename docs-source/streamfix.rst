@@ -1,7 +1,7 @@
-geocoding module
+streamfix module
 ================
 
-.. automodule:: geocoding
+.. automodule:: streamfix
    :members:
    :undoc-members:
    :show-inheritance:
