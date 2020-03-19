@@ -1,7 +1,7 @@
-sync module
+ctrl module
 ===========
 
-.. automodule:: sync
+.. automodule:: ctrl
    :members:
    :undoc-members:
    :show-inheritance:

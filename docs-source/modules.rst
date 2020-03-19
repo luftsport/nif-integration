@@ -3,17 +3,20 @@ nif-integration
 
 .. toctree::
    :maxdepth: 4
-   
-   sync
-   pyros
-   syncdaemon
-   integration
-   stream
-   secret
-   typings
+
    app_logger
+   ctrl
    decorators
    eve_api
-   nif_api
+   geocoding
+   integration
    organizations
+   rebuild_api_resources
    reset_api
+   settings
+   settings-default
+   stream
+   streamdaemon
+   streamfix
+   sync
+   syncdaemon
