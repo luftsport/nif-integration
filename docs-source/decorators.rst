@@ -2,6 +2,6 @@ decorators module
 =================
 
 .. automodule:: decorators
-    :members:
-    :undoc-members:
-    :show-inheritance:
+   :members:
+   :undoc-members:
+   :show-inheritance:
