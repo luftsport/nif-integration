@@ -1,5 +1,7 @@
 # NIF Integration
 
+A pythonic integration of [NIF Webservices](https://itinfo.nif.no/Integrasjon_Web_servicer) for [Lungo](luftsport/lungo).
+
 See docs at https://luftsport.github.io/nif-integration
 
 ## Install
