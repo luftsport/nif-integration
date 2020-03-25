@@ -277,7 +277,7 @@ class SyncWrapper:
                 self.failed_clubs.append({'name': 'From list', 'club_id': club_id})
 
         # Sleep because last created user!
-        time.sleep(180)
+        time.sleep(140)
         # Add each integration user to workers
         for club_user in integration_users:
 
@@ -285,6 +285,7 @@ class SyncWrapper:
 
                 if club_user.test_login():
 
+                    # CHANGES: Persons, Functions, Organizations
                     self.workers.append(NifSync(org_id=club_user.club_id,
                                                 username=club_user.username,
                                                 password=club_user.password,
@@ -298,7 +299,25 @@ class SyncWrapper:
                                                 sync_type='changes',
                                                 sync_interval=NIF_CHANGES_SYNC_INTERVAL))
 
-                    self.log.info('Added {}'.format(club_user.username))
+                    self.log.info('Added CHANGES {}'.format(club_user.username))
+
+                    # CHANGES: Payments
+                    time.sleep(10)
+                    self.workers.append(NifSync(org_id=club_user.club_id,
+                                                username=club_user.username,
+                                                password=club_user.password,
+                                                created=club_user.club_created,
+                                                stopper=self.stopper,
+                                                restart=self.restart,
+                                                background=False,
+                                                initial_timedelta=0,
+                                                overlap_timedelta=5,
+                                                lock=self.bound_semaphore,
+                                                sync_type='payments',
+                                                sync_interval=NIF_CHANGES_SYNC_INTERVAL))
+
+                    self.log.info('Added PAYMENTS {}'.format(club_user.username))
+
                 else:
                     self.log.error('Failed login for {} with password {}'.format(club_user.club_id, club_user.password))
                     self.failed_clubs.append({'name': club_user.club_name, 'club_id': club_user.club_id})

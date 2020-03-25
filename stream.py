@@ -7,7 +7,7 @@ from dateutil import tz
 
 from eve_api import EveJSONEncoder
 from eve_api import ChangeStreamItem
-from nif_api import NifApiIntegration, NifApiCompetence
+from nif_api import NifApiIntegration, NifApiCompetence, NifApiPayments
 from settings import (
     ACLUBU,
     ACLUBP,
@@ -91,11 +91,12 @@ class NifStream:
             'Organization': {'url': '{}/organizations/process'.format(API_URL), 'id': 'id'},
             'Competence': {'url': '{}/competences/process'.format(API_URL), 'id': 'id'},
             'License': {'url': '{}/licenses/process'.format(API_URL), 'id': 'id'},
-            'Changes': {'url': '{}/integration/changes'.format(API_URL), 'id': 'id'},
+            'Payment': {'url': '{}/payments/process'.format(API_URL), 'id': 'id'},
+            'Changes': {'url': '{}/integration/changes'.format(API_URL), 'id': 'id'}
+
         }
 
-        # NIF Api
-        # Needs one of the clubs? Using platform user!
+        # NIF Api's
         self.api_license = NifApiIntegration(username=NIF_FEDERATION_USERNAME,
                                              password=NIF_FEDERATION_PASSWORD,
                                              log_file=STREAM_LOG_FILE,
@@ -106,10 +107,17 @@ class NifStream:
                                                log_file=STREAM_LOG_FILE,
                                                realm=NIF_REALM)
 
+        self.api_payments = NifApiPayments(username=ACLUBU,
+                                           password=ACLUBP,
+                                           log_file=STREAM_LOG_FILE,
+                                           realm=NIF_REALM)
+
         self.api = NifApiIntegration(username=ACLUBU,
                                      password=ACLUBP,
                                      log_file=STREAM_LOG_FILE,
                                      realm=NIF_REALM)
+
+
 
         status, hello = self.api._test()
         if status is not True:
@@ -193,6 +201,9 @@ class NifStream:
 
                 elif change.entity_type == 'Competence':
                     status, result = self.api_competence.get_competence(change.get_id())
+
+                elif change.entity_type == 'Payment':
+                    status, result = self.api_payments.get_payment(change.get_id())
 
                 # Insert into Lungo api
                 if status is True:
