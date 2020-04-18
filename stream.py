@@ -7,7 +7,7 @@ from dateutil import tz
 
 from eve_api import EveJSONEncoder
 from eve_api import ChangeStreamItem
-from nif_api import NifApiIntegration, NifApiCompetence
+from nif_api import NifApiIntegration, NifApiCompetence, NifApiPayments
 from settings import (
     ACLUBU,
     ACLUBP,
@@ -91,11 +91,12 @@ class NifStream:
             'Organization': {'url': '{}/organizations/process'.format(API_URL), 'id': 'id'},
             'Competence': {'url': '{}/competences/process'.format(API_URL), 'id': 'id'},
             'License': {'url': '{}/licenses/process'.format(API_URL), 'id': 'id'},
-            'Changes': {'url': '{}/integration/changes'.format(API_URL), 'id': 'id'},
+            'Payment': {'url': '{}/payments/process'.format(API_URL), 'id': 'id'},
+            'Changes': {'url': '{}/integration/changes'.format(API_URL), 'id': 'id'}
+
         }
 
-        # NIF Api
-        # Needs one of the clubs? Using platform user!
+        # NIF Api's
         self.api_license = NifApiIntegration(username=NIF_FEDERATION_USERNAME,
                                              password=NIF_FEDERATION_PASSWORD,
                                              log_file=STREAM_LOG_FILE,
@@ -105,6 +106,11 @@ class NifStream:
                                                password=NIF_FEDERATION_PASSWORD,
                                                log_file=STREAM_LOG_FILE,
                                                realm=NIF_REALM)
+
+        self.api_payments = NifApiPayments(username=ACLUBU,
+                                           password=ACLUBP,
+                                           log_file=STREAM_LOG_FILE,
+                                           realm=NIF_REALM)
 
         self.api = NifApiIntegration(username=ACLUBU,
                                      password=ACLUBP,
@@ -193,6 +199,9 @@ class NifStream:
 
                 elif change.entity_type == 'Competence':
                     status, result = self.api_competence.get_competence(change.get_id())
+
+                elif change.entity_type == 'Payment':
+                    status, result = self.api_payments.get_payment(change.get_id())
 
                 # Insert into Lungo api
                 if status is True:
@@ -418,35 +427,35 @@ class NifStream:
             api_existing_object = api_document.json()
 
             # Only update if newer
-            if dateutil.parser.parse(api_existing_object['_updated']) < change.get_modified().replace(
-                    tzinfo=self.tz_local):
+            # if dateutil.parser.parse(api_existing_object['_updated']) < change.get_modified().replace(tzinfo=self.tz_local):
 
-                # Geocode
-                if change.get_value('entity_type') == 'Person' and STREAM_GEOCODE is True:
-                    payload = add_person_location(payload)
+            # Geocode Person
+            if change.get_value('entity_type') == 'Person' and STREAM_GEOCODE is True:
+                payload = add_person_location(payload)
 
-                # Really need to preserve the activities for clubs type_id 5
-                if change.get_value('entity_type') == 'Organization' and payload.get('type_id', 0) == 5:
-                    payload.pop('activities', None)
-                    payload.pop('main_activity', None)
-                    rapi = requests.patch('%s/%s' % (self.api_collections[change.get_value('entity_type')]['url'],
-                                                     api_existing_object['_id']),
-                                          data=json.dumps(payload, cls=EveJSONEncoder),
-                                          headers=self._merge_dicts(API_HEADERS,
-                                                                    {'If-Match': api_existing_object['_etag']})
-                                          )
-                else:
-                    rapi = requests.put('%s/%s' % (self.api_collections[change.get_value('entity_type')]['url'],
-                                                   api_existing_object['_id']),
-                                        data=json.dumps(payload, cls=EveJSONEncoder),
-                                        headers=self._merge_dicts(API_HEADERS,
-                                                                  {'If-Match': api_existing_object['_etag']})
-                                        )
-
-            # If obsolete, just return
+            # Really need to preserve the activities for clubs type_id 5
+            if change.get_value('entity_type') == 'Organization' and payload.get('type_id', 0) == 5:
+                payload.pop('activities', None)
+                payload.pop('main_activity', None)
+                rapi = requests.patch('%s/%s' % (self.api_collections[change.get_value('entity_type')]['url'],
+                                                 api_existing_object['_id']),
+                                      data=json.dumps(payload, cls=EveJSONEncoder),
+                                      headers=self._merge_dicts(API_HEADERS,
+                                                                {'If-Match': api_existing_object['_etag']})
+                                      )
             else:
-                change.set_status('finished')
-                return True, None
+                rapi = requests.put('%s/%s' % (self.api_collections[change.get_value('entity_type')]['url'],
+                                               api_existing_object['_id']),
+                                    data=json.dumps(payload, cls=EveJSONEncoder),
+                                    headers=self._merge_dicts(API_HEADERS,
+                                                              {'If-Match': api_existing_object['_etag']})
+                                    )
+
+            # Disabled, ref check if newer
+            # If obsolete, just return
+            # else:
+            #     change.set_status('finished')
+            #     return True, None
 
         # If successful put or post
         if rapi.status_code in [200, 201]:
