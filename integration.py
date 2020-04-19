@@ -164,6 +164,20 @@ class NifIntegrationUser:
             self.log.exception('Unknown error')
             raise NifIntegrationUserError
 
+    def test_login(self):
+
+        try:
+            s = NifApiSynchronization(username=self.username,
+                                      password=self.password,
+                                      realm=NIF_REALM,
+                                      log_file=self.log_file,
+                                      test_login=True)
+            return True
+        except:
+            pass
+
+        return False
+
     def _time_authentication(self, create_delay) -> bool:
 
         self.log.debug('Running auth test for {} with password {}'.format(self.username, self.password))

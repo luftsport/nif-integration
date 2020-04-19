@@ -355,7 +355,7 @@ class NifStream:
         if self.resume_token_lock is not True:
 
             try:
-                with open(STREAM_RESUME_TOKEN_FILE, 'wb+') as f:
+                with open(STREAM_RESUME_TOKEN_FILE, 'w+') as f: # removed binary b
                     f.write(self.resume_token)
             except Exception as e:
                 self.log.exception('Could not write resume token')
@@ -363,7 +363,7 @@ class NifStream:
     def _read_resume_token(self):
         """Reads the value of :py:attr:`resume_token_path` file into :py:attr:`resume_token`"""
         try:
-            with open(STREAM_RESUME_TOKEN_FILE, 'rb') as f:
+            with open(STREAM_RESUME_TOKEN_FILE, 'r') as f: # removed binary b
                 self.resume_token = f.read()
         except FileNotFoundError:
             self.resume_token = None
