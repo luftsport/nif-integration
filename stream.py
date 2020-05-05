@@ -117,6 +117,8 @@ class NifStream:
                                      log_file=STREAM_LOG_FILE,
                                      realm=NIF_REALM)
 
+
+
         status, hello = self.api._test()
         if status is not True:
             self.log.error('[TERMINATING] Problems with NIF authentication')
