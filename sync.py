@@ -34,7 +34,8 @@ from settings import (
     NIF_REALM,
     SYNC_LOG_FILE,
     NIF_SYNC_DELAY,
-    NIF_SYNC_MAX_ERRORS
+    NIF_SYNC_MAX_ERRORS,
+    NIF_SYNC_TYPES
 )
 
 
@@ -177,7 +178,7 @@ class NifSync(threading.Thread):
         # Init thread
         super().__init__(name='klubb-{0}'.format(org_id))
 
-        if sync_type in ['changes', 'payments', 'license', 'competence', 'federation']:
+        if sync_type in NIF_SYNC_TYPES:
             self.sync_type = sync_type
         else:
             raise Exception('{} is not a valid sync type'.format(sync_type))

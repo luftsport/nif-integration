@@ -3,7 +3,11 @@ from settings import API_HEADERS, API_URL
 from bson import ObjectId
 import dateutil.parser
 import datetime
-from eve_api import EveJSONEncoder
+try:
+    from eve_api import EveJSONEncoder
+except:
+    from .eve_jsonencoder import EveJSONEncoder
+
 import json
 
 

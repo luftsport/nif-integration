@@ -37,7 +37,7 @@ class AppLogger:
 
         if not len(self.logger.handlers):
 
-            fh = logging.FileHandler('{}/{0}.log'.format(path, name))
+            fh = logging.FileHandler('{0}/{1}.log'.format(path, name))
             fh_formatter = logging.Formatter('[%(asctime)s] %(levelname)s: %(message)s')
             fh.setLevel(logging.DEBUG)
             fh.setFormatter(fh_formatter)

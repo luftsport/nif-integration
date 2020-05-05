@@ -24,7 +24,8 @@ from settings import (
     RPC_SERVICE_HOST,
     RPC_SERVICE_PORT,
     NIF_TEST_MAX_CLUBS,
-    NIF_INTEGERATION_CLUBS_EXCLUDE
+    NIF_INTEGERATION_CLUBS_EXCLUDE,
+    NIF_SYNC_TYPES
 )
 from app_logger import AppLogger
 
@@ -286,37 +287,39 @@ class SyncWrapper:
                 if club_user.test_login():
 
                     # CHANGES: Persons, Functions, Organizations
-                    self.workers.append(NifSync(org_id=club_user.club_id,
-                                                username=club_user.username,
-                                                password=club_user.password,
-                                                created=club_user.club_created,
-                                                stopper=self.stopper,
-                                                restart=self.restart,
-                                                background=False,
-                                                initial_timedelta=0,
-                                                overlap_timedelta=5,
-                                                lock=self.bound_semaphore,
-                                                sync_type='changes',
-                                                sync_interval=NIF_CHANGES_SYNC_INTERVAL))
+                    if 'changes' in NIF_SYNC_TYPES:
+                        self.workers.append(NifSync(org_id=club_user.club_id,
+                                                    username=club_user.username,
+                                                    password=club_user.password,
+                                                    created=club_user.club_created,
+                                                    stopper=self.stopper,
+                                                    restart=self.restart,
+                                                    background=False,
+                                                    initial_timedelta=0,
+                                                    overlap_timedelta=5,
+                                                    lock=self.bound_semaphore,
+                                                    sync_type='changes',
+                                                    sync_interval=NIF_CHANGES_SYNC_INTERVAL))
 
-                    self.log.info('Added CHANGES {}'.format(club_user.username))
+                        self.log.info('Added CHANGES {}'.format(club_user.username))
 
-                    # CHANGES: Payments
-                    time.sleep(10)
-                    self.workers.append(NifSync(org_id=club_user.club_id,
-                                                username=club_user.username,
-                                                password=club_user.password,
-                                                created=club_user.club_created,
-                                                stopper=self.stopper,
-                                                restart=self.restart,
-                                                background=False,
-                                                initial_timedelta=0,
-                                                overlap_timedelta=5,
-                                                lock=self.bound_semaphore,
-                                                sync_type='payments',
-                                                sync_interval=NIF_CHANGES_SYNC_INTERVAL))
+                    if 'payments' in NIF_SYNC_TYPES:
+                        # CHANGES: Payments
+                        time.sleep(10)
+                        self.workers.append(NifSync(org_id=club_user.club_id,
+                                                    username=club_user.username,
+                                                    password=club_user.password,
+                                                    created=club_user.club_created,
+                                                    stopper=self.stopper,
+                                                    restart=self.restart,
+                                                    background=False,
+                                                    initial_timedelta=0,
+                                                    overlap_timedelta=5,
+                                                    lock=self.bound_semaphore,
+                                                    sync_type='payments',
+                                                    sync_interval=NIF_CHANGES_SYNC_INTERVAL))
 
-                    self.log.info('Added PAYMENTS {}'.format(club_user.username))
+                        self.log.info('Added PAYMENTS {}'.format(club_user.username))
 
                 else:
                     self.log.error('Failed login for {} with password {}'.format(club_user.club_id, club_user.password))
@@ -330,44 +333,48 @@ class SyncWrapper:
         try:
             self.log.info('Adding competences and license sync')
             org = NifOrganization(376)
-            self.workers.append(NifSync(org_id=900001,
-                                        username=NIF_FEDERATION_USERNAME,
-                                        password=NIF_FEDERATION_PASSWORD,
-                                        created=org.created,
-                                        stopper=self.stopper,
-                                        restart=self.restart,
-                                        background=False,
-                                        initial_timedelta=0,
-                                        overlap_timedelta=5,
-                                        lock=self.bound_semaphore,
-                                        sync_type='license',
-                                        sync_interval=NIF_LICENSE_SYNC_INTERVAL))
 
-            self.workers.append(NifSync(org_id=900002,
-                                        username=NIF_FEDERATION_USERNAME,
-                                        password=NIF_FEDERATION_PASSWORD,
-                                        created=org.created,
-                                        stopper=self.stopper,
-                                        restart=self.restart,
-                                        background=False,
-                                        initial_timedelta=0,
-                                        overlap_timedelta=5,
-                                        lock=self.bound_semaphore,
-                                        sync_type='competence',
-                                        sync_interval=NIF_COMPETENCE_SYNC_INTERVAL))
+            if 'license' in NIF_SYNC_TYPES:
+                self.workers.append(NifSync(org_id=900001,
+                                            username=NIF_FEDERATION_USERNAME,
+                                            password=NIF_FEDERATION_PASSWORD,
+                                            created=org.created,
+                                            stopper=self.stopper,
+                                            restart=self.restart,
+                                            background=False,
+                                            initial_timedelta=0,
+                                            overlap_timedelta=5,
+                                            lock=self.bound_semaphore,
+                                            sync_type='license',
+                                            sync_interval=NIF_LICENSE_SYNC_INTERVAL))
 
-            self.workers.append(NifSync(org_id=376,
-                                        username=NIF_FEDERATION_USERNAME,
-                                        password=NIF_FEDERATION_PASSWORD,
-                                        created=org.created,
-                                        stopper=self.stopper,
-                                        restart=self.restart,
-                                        background=False,
-                                        initial_timedelta=0,
-                                        overlap_timedelta=5,
-                                        lock=self.bound_semaphore,
-                                        sync_type='federation',
-                                        sync_interval=NIF_COMPETENCE_SYNC_INTERVAL))
+            if 'competence' in NIF_SYNC_TYPES:
+                self.workers.append(NifSync(org_id=900002,
+                                            username=NIF_FEDERATION_USERNAME,
+                                            password=NIF_FEDERATION_PASSWORD,
+                                            created=org.created,
+                                            stopper=self.stopper,
+                                            restart=self.restart,
+                                            background=False,
+                                            initial_timedelta=0,
+                                            overlap_timedelta=5,
+                                            lock=self.bound_semaphore,
+                                            sync_type='competence',
+                                            sync_interval=NIF_COMPETENCE_SYNC_INTERVAL))
+
+            if 'federation' in NIF_SYNC_TYPES:
+                self.workers.append(NifSync(org_id=376,
+                                            username=NIF_FEDERATION_USERNAME,
+                                            password=NIF_FEDERATION_PASSWORD,
+                                            created=org.created,
+                                            stopper=self.stopper,
+                                            restart=self.restart,
+                                            background=False,
+                                            initial_timedelta=0,
+                                            overlap_timedelta=5,
+                                            lock=self.bound_semaphore,
+                                            sync_type='federation',
+                                            sync_interval=NIF_COMPETENCE_SYNC_INTERVAL))
         except Exception as e:
             self.log.exception('Error initiating licenses and competences')
 
