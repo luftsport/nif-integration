@@ -117,8 +117,6 @@ class NifStream:
                                      log_file=STREAM_LOG_FILE,
                                      realm=NIF_REALM)
 
-
-
         status, hello = self.api._test()
         if status is not True:
             self.log.error('[TERMINATING] Problems with NIF authentication')
@@ -185,6 +183,7 @@ class NifStream:
         status = False
 
         if change.set_status('pending'):
+            print(change.get_id())
             try:
                 # Get object from nif_api
                 if change.entity_type == 'Person':
@@ -205,14 +204,30 @@ class NifStream:
                 elif change.entity_type == 'Payment':
                     status, result = self.api_payments.get_payment(change.get_id())
 
+                print('STATUS', status)
+                print('RESULT', result)
+
                 # Insert into Lungo api
                 if status is True:
-                    pstatus, pmessage = self._process(result, change)
-                    if pstatus is True:  # Sets the change message status
-                        change.set_status('finished')
-                        return True
+                    if change.entity_type == 'Payment':
+                        pmt_status = []
+                        for pmt in result:
+                            pstatus, pmessage = self._process(pmt, change)
+                            pmt_status.append(pstatus)
+
+                        if False not in pmt_status:  # Sets the change message status
+                            change.set_status('finished')
+                            return True
+                        else:
+                            change.set_status('error', 'Error in payment')
+
                     else:
-                        change.set_status('error', pmessage)
+                        pstatus, pmessage = self._process(result, change)
+                        if pstatus is True:  # Sets the change message status
+                            change.set_status('finished')
+                            return True
+                        else:
+                            change.set_status('error', pmessage)
 
                 else:
                     self.log.error('NIF API error for {} ({}) change message: {}'.format(change.entity_type,
@@ -357,7 +372,7 @@ class NifStream:
         if self.resume_token_lock is not True:
 
             try:
-                with open(STREAM_RESUME_TOKEN_FILE, 'w+') as f: # removed binary b
+                with open(STREAM_RESUME_TOKEN_FILE, 'w+') as f:  # removed binary b
                     f.write(self.resume_token)
             except Exception as e:
                 self.log.exception('Could not write resume token')
@@ -365,7 +380,7 @@ class NifStream:
     def _read_resume_token(self):
         """Reads the value of :py:attr:`resume_token_path` file into :py:attr:`resume_token`"""
         try:
-            with open(STREAM_RESUME_TOKEN_FILE, 'r') as f: # removed binary b
+            with open(STREAM_RESUME_TOKEN_FILE, 'r') as f:  # removed binary b
                 self.resume_token = f.read()
         except FileNotFoundError:
             self.resume_token = None
@@ -405,6 +420,8 @@ class NifStream:
         :return: True on success
         :rtype: bool
         """
+        print('PL', payload)
+        print('CH', change)
         api_document = requests.get('%s/%s' % (self.api_collections[change.get_value('entity_type')]['url'],
                                                payload[self.api_collections[change.get_value('entity_type')]['id']]),
                                     headers=API_HEADERS)
@@ -422,6 +439,10 @@ class NifStream:
             rapi = requests.post(self.api_collections[change.get_value('entity_type')]['url'],
                                  data=json.dumps(payload, cls=EveJSONEncoder),
                                  headers=API_HEADERS)
+
+            print('[URL]', self.api_collections[change.get_value('entity_type')]['url'])
+            print('[RAPI] Post said', rapi.text)
+            print('[RAPI] Payload', payload)
 
         # Do exist, replace
         elif api_document.status_code == 200:
