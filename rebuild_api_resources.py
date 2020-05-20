@@ -13,9 +13,9 @@ from geocoding import add_organization_location
 
 
 class NifRebuildResources:
-    def __init__(self):
+    def __init__(self, realm='PROD', log_file='prod-rebuild.log'):
 
-        self.api_club = NifApiIntegration(ACLUBU, ACLUBP)
+        self.api_club = NifApiIntegration(ACLUBU, ACLUBP, realm, log_file)
         # self.api_fed = NifApiIntegration(NIF_FEDERATION_USERNAME, NIF_FEDERATION_PASSWORD)
         # self.api_competences = NifApiCompetence(NIF_FEDERATION_USERNAME, NIF_FEDERATION_PASSWORD)
 
@@ -309,15 +309,15 @@ class NifRebuildResources:
 
     def rebuild(self):
 
-        self.organizations()
-        self.organizations_types()
+        #self.organizations()
+        #self.organizations_types()
         # self.competence_types()
         self.counties()
         self.countries()
         self.function_types()
-        self.license_types()
-        self.license_status()
-        self.activities()
+        #self.license_types()
+        #self.license_status()
+        #self.activities()
 
     def run(self):
         self.rebuild()

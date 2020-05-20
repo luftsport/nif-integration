@@ -24,7 +24,7 @@ from settings import (
     RPC_SERVICE_NAME,
     RPC_SERVICE_HOST,
     RPC_SERVICE_PORT,
-    NIF_TEST_MAX_CLUBS,
+    NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING,
     NIF_INTEGERATION_CLUBS_EXCLUDE,
     NIF_SYNC_TYPES
 )
@@ -254,8 +254,8 @@ class SyncWrapper:
 
             # clubs = self.integration.get_clubs()
 
-            # Only a list of integers!
-            clubs = self.integration.get_active_clubs_from_ka()
+            # Only a list of integers! NIF Clubs
+            clubs = self.integration.get_active_clubs(type_id=5)
 
             self.log.info('Got {} integration users'.format(len(clubs)))
 
@@ -266,6 +266,8 @@ class SyncWrapper:
                     continue
                 elif club_id not in NIF_INTEGERATION_CLUBS_EXCLUDE:
                     self.club_list.append(club_id)
+                elif club_id in NIF_INTEGERATION_CLUBS_EXCLUDE:
+                    self.club_list.append(NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING[club_id])
 
                 try:
                     if club_id not in NIF_INTEGERATION_CLUBS_EXCLUDE:

@@ -352,16 +352,14 @@ class NifIntegration:
 
         pass
 
-    def get_active_clubs_from_ka(self) -> [int]:
-        r = requests.get(
-            '{}/ka/clubs?max_results=10000&where={{"IsActive": true, "OrgTypeId": {{"$in": [5,6]}} }}'.format(API_URL),
-            headers=API_HEADERS)
+    def get_active_clubs(self, type_id=5) -> [int]:
+        r = requests.get('{}/organizations?where={{"is_active": true, "type_id": {}, "main_activity.id": {{"$in": [109,110,111,235,236,237,238]}}}}&projection={{"id": 1}}&max_results=10000'.format(API_URL, type_id),headers=API_HEADERS)
 
         if r.status_code == 200:
             resp = r.json()
 
             if '_items' in resp:
-                clubs = [d['Id'] for d in resp['_items']]
+                clubs = [d['id'] for d in resp['_items']]
                 return clubs
 
         return []
