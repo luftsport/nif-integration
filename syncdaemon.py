@@ -26,6 +26,7 @@ from settings import (
     RPC_SERVICE_PORT,
     NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING,
     NIF_INTEGERATION_CLUBS_EXCLUDE,
+    NIF_INTEGERATION_CLUBS_MISSING,
     NIF_SYNC_TYPES
 )
 from app_logger import AppLogger
@@ -248,7 +249,6 @@ class SyncWrapper:
         self.log.info('Starting workers')
         self.workers_started.set()
 
-
         if 'changes' in NIF_SYNC_TYPES:
             integration_users = []
 
@@ -257,23 +257,28 @@ class SyncWrapper:
             # Only a list of integers! NIF Clubs
             clubs = self.integration.get_active_clubs(type_id=5)
 
+            for missing_club in NIF_INTEGERATION_CLUBS_MISSING:
+                clubs.append(missing_club)
+
             self.log.info('Got {} integration users'.format(len(clubs)))
 
             # Setup each integration user from list of integers
-            for club_id in clubs:
-
-                if club_id in self.club_list:
-                    continue
-                elif club_id not in NIF_INTEGERATION_CLUBS_EXCLUDE:
-                    self.club_list.append(club_id)
-                elif club_id in NIF_INTEGERATION_CLUBS_EXCLUDE:
-                    self.club_list.append(NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING[club_id])
+            for club_id in list(set(clubs)):
 
                 try:
                     if club_id not in NIF_INTEGERATION_CLUBS_EXCLUDE:
-                        integration_users.append(NifIntegrationUser(club_id=club_id,
-                                                                    create_delay=0))
-                        time.sleep(0.2)
+                        integration_users.append(
+                            NifIntegrationUser(club_id=club_id,
+                                               create_delay=0))
+                        self.club_list.append(club_id)
+
+                    elif club_id in NIF_INTEGERATION_CLUBS_EXCLUDE:
+                        integration_users.append(
+                            NifIntegrationUser(club_id=(NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING[club_id]),
+                                               create_delay=0))
+                        self.club_list.append(NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING[club_id])
+
+                    time.sleep(0.2)
 
                 except NifIntegrationUserError as e:
                     self.log.exception('Problems creating user for club_id {}: {}'.format(club_id, e))
@@ -311,14 +316,13 @@ class SyncWrapper:
 
 
                     else:
-                        self.log.error('Failed login for {} with password {}'.format(club_user.club_id, club_user.password))
+                        self.log.error(
+                            'Failed login for {} with password {}'.format(club_user.club_id, club_user.password))
                         self.failed_clubs.append({'name': club_user.club_name, 'club_id': club_user.club_id})
 
                 except Exception as e:
                     self.failed_clubs.append({'name': club_user.club_name, 'club_id': club_user.club_id})
                     self.log.exception('Problems for {} ({})'.format(club_user.club_name, club_user.club_id))
-
-
 
         # Add license-sync
         try:
@@ -331,7 +335,7 @@ class SyncWrapper:
                 self.workers.append(NifSync(org_id=900003,
                                             username=NIF_FEDERATION_USERNAME,
                                             password=NIF_FEDERATION_PASSWORD,
-                                            created='2019-10-01T00:00:00Z', #org.created,
+                                            created='2019-10-01T00:00:00Z',  # org.created,
                                             stopper=self.stopper,
                                             restart=self.restart,
                                             background=False,
@@ -340,7 +344,6 @@ class SyncWrapper:
                                             lock=self.bound_semaphore,
                                             sync_type='payments',
                                             sync_interval=NIF_PAYMENTS_SYNC_INTERVAL))
-
 
             if 'license' in NIF_SYNC_TYPES:
                 self.workers.append(NifSync(org_id=900001,
