@@ -240,14 +240,14 @@ class NifIntegrationUser:
         self.log.debug('User:   {}'.format(club_username))
         self.log.debug('Pwd:    {}'.format(self.password))
 
-        # The exception is caught in the call to _create.
         status, self.nif_user = sync_client.create_integration_user(
-            FirstName='{0}-{1}'.format(NIF_CLUB_FIRSTNAME_PREFIX,
-                                       self.club_id),
-            LastName='NIF.Connect',
-            OrgId=self.club_id,
-            Password=self.password,
-            UserName=club_username)
+            prefix=NIF_CLUB_FIRSTNAME_PREFIX,
+            club_id=self.club_id,
+            club_username_prefix=NIF_CLUB_USERNAME_PREFIX,
+            club_firstname_prefix='klubb',
+            password=self.password
+        )
+
         # Email=None)
 
         if status is True:
@@ -310,8 +310,7 @@ class NifIntegrationUser:
                 raise NifIntegrationUserCreateError
 
         else:
-            self.log.error(
-                'Could not create integration user {0} with password {1}'.format(club_username, self.password))
+            self.log.error('Could not create integration user {0} with password {1}'.format(club_username, self.password))
             self.log.error('NIF Api said:')
             self.log.error('Code:   {}'.format(self.nif_user['ErrorCode']))
             self.log.error('Message:{}'.format(self.nif_user['ErrorMessage']))
@@ -319,9 +318,10 @@ class NifIntegrationUser:
 
         return False
 
-    def get_user(self):
 
+    def get_user(self):
         pass
+
 
     def generate_password(self, count=1, length=12):
         """ Generate password
@@ -353,7 +353,11 @@ class NifIntegration:
         pass
 
     def get_active_clubs(self, type_id=5) -> [int]:
-        r = requests.get('{}/organizations?where={{"is_active": true, "type_id": {}, "main_activity.id": {{"$in": [109,110,111,235,236,237,238]}}}}&projection={{"id": 1}}&max_results=10000'.format(API_URL, type_id),headers=API_HEADERS)
+
+        # , "main_activity.id": {{"$in": [109,110,111,235,236,237,238]}}
+        r = requests.get(
+            '{}/organizations?where={{"is_active": true, "type_id": {}}}&projection={{"id": 1}}&max_results=10000'.format(
+                API_URL, type_id), headers=API_HEADERS)
 
         if r.status_code == 200:
             resp = r.json()
