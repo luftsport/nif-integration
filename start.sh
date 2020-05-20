@@ -4,6 +4,7 @@ INVENV=$(python -c 'import sys; print ("1" if hasattr(sys, "real_prefix") else "
 
 WORKING_DIR="${PWD}/"
 GUNICORN="${PWD}/bin/gunicorn"
+PYTHON="${PWD}/bin/python"
 
 cd $WORKING_DIR
 
@@ -12,7 +13,17 @@ then
         source bin/acticate
 fi
 
-$GUNICORN --workers=5 --threads=20 --worker-class=meinheld.gmeinheld.MeinheldWorker -b localhost:9191 run:app --log-level=debug --log-file=unicorn.log --pid gunicorn.pid &
+# Start stream daemon
+$PYTHON streamdaemon.py
+sleep 5
+
+# Start the sync daemon
+$PYTHON syncdaemon.py
+sleep 10
+
+# Issue start cmd to syncdaemon
+/bin/bash ctrl.sh start
+
 
 if [[ INVENV == 0 ]]
 then
