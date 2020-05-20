@@ -183,7 +183,6 @@ class NifStream:
         status = False
 
         if change.set_status('pending'):
-            print(change.get_id())
             try:
                 # Get object from nif_api
                 if change.entity_type == 'Person':
@@ -204,8 +203,6 @@ class NifStream:
                 elif change.entity_type == 'Payment':
                     status, result = self.api_payments.get_payment(change.get_id())
 
-                print('STATUS', status)
-                print('RESULT', result)
 
                 # Insert into Lungo api
                 if status is True:
@@ -420,8 +417,6 @@ class NifStream:
         :return: True on success
         :rtype: bool
         """
-        print('PL', payload)
-        print('CH', change)
         api_document = requests.get('%s/%s' % (self.api_collections[change.get_value('entity_type')]['url'],
                                                payload[self.api_collections[change.get_value('entity_type')]['id']]),
                                     headers=API_HEADERS)
@@ -440,9 +435,6 @@ class NifStream:
                                  data=json.dumps(payload, cls=EveJSONEncoder),
                                  headers=API_HEADERS)
 
-            print('[URL]', self.api_collections[change.get_value('entity_type')]['url'])
-            print('[RAPI] Post said', rapi.text)
-            print('[RAPI] Payload', payload)
 
         # Do exist, replace
         elif api_document.status_code == 200:
