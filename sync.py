@@ -248,7 +248,8 @@ class NifSync(threading.Thread):
         self.org_id = org_id
 
         try:
-            self.nif = NifApiSynchronization(username, password, realm=NIF_REALM, log_file=SYNC_LOG_FILE, test_login=False)
+            self.nif = NifApiSynchronization(username, password, realm=NIF_REALM, log_file=SYNC_LOG_FILE,
+                                             test_login=False)
         except:
             self.log.exception('Sync client creation for {} failed, terminating'.format(username))
             # sys.exit(0)
@@ -411,10 +412,10 @@ class NifSync(threading.Thread):
 
                 sequential_ordinal = dateutil.parser.parse(c[0]['sequence_ordinal']).replace(tzinfo=self.tz_utc)
 
-                self.log.debug(
-                    'Last change message recorded {0}'.format(sequential_ordinal.astimezone(self.tz_local).isoformat()))
+                self.log.debug('Last change message recorded {0}'.format(sequential_ordinal.astimezone(self.tz_local).isoformat()))
 
-                self.initial_start = sequential_ordinal + timedelta(seconds=self.initial_timedelta) - timedelta(hours=self.overlap_timedelta)
+                self.initial_start = sequential_ordinal + timedelta(seconds=self.initial_timedelta) - timedelta(
+                    hours=self.overlap_timedelta)
 
                 if self.initial_start.tzinfo is None or self.initial_start.tzinfo.utcoffset(self.initial_start) is None:
                     self.initial_start = self.initial_start.replace(self.tz_local)
@@ -486,6 +487,9 @@ class NifSync(threading.Thread):
             v['_org_id'] = self.org_id
             v['_realm'] = NIF_REALM
 
+            if 'name' not in v or v['name'] is None:
+                v['name'] = 'NA'
+
             r = requests.post(self.api_integration_url,
                               data=json.dumps(v, cls=EveJSONEncoder),
                               headers=API_HEADERS)
@@ -496,13 +500,12 @@ class NifSync(threading.Thread):
                 self.messages += 1
 
             elif r.status_code == 422:
-                self.log.debug('422 {0} with id {1} already exists'.format(v['entity_type'],
-                                                                           v['id']))
+                self.log.debug('422 {0} with id {1} already exists error {2}'.format(v['entity_type'],
+                                                                                     v['id'], r.text))
             else:
-                self.log.error(
-                    '{0} - Could not create change message for {1} with id {2}'.format(r.status_code,
-                                                                                       v['entity_type'],
-                                                                                       v['id']))
+                self.log.error('{0} - Could not create change message for {1} with id {2}'.format(r.status_code,
+                                                                                                  v['entity_type'],
+                                                                                                  v['id']))
                 self.log.error(r.text)
 
     def _get_change_messages(self, start_date, end_date, resource) -> None:
@@ -698,4 +701,3 @@ class NifSync(threading.Thread):
 if __name__ == "__main__":
     print('Running this file directly is not permittet')
     sys.exit(0)
-
