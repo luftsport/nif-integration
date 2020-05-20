@@ -9,6 +9,7 @@ except:
     from .eve_jsonencoder import EveJSONEncoder
 
 import json
+from collections import Mapping
 
 
 class ErrorNoEtag(Exception):
@@ -54,6 +55,9 @@ class ChangeStreamItem:
             payload = {'_status': status}
 
             if error is not None:
+                if isinstance(error, Mapping) is False:
+                    error = {'message': str(error)}
+
                 payload.update({'_issues': error})
 
             r = requests.patch('%s/%s' % (self.api_url, self._id),
@@ -91,7 +95,7 @@ class ChangeStreamItem:
                 pass
 
         else:
-            # print('Error wrong status %s' % status)
+            # print('Error wrong status Changes %s' % status)
             pass
 
         return False
