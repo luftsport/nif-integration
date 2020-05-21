@@ -24,9 +24,8 @@ from settings import (
     RPC_SERVICE_NAME,
     RPC_SERVICE_HOST,
     RPC_SERVICE_PORT,
-    NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING,
-    NIF_INTEGERATION_CLUBS_EXCLUDE,
-    NIF_INTEGERATION_CLUBS_MISSING,
+    NIF_INTEGRATION_EXCLUDE_CLUBS,
+    NIF_INTEGRATION_GROUPS_AS_CLUBS,
     NIF_SYNC_TYPES
 )
 from app_logger import AppLogger
@@ -257,27 +256,20 @@ class SyncWrapper:
             # Only a list of integers! NIF Clubs
             clubs = self.integration.get_active_clubs(type_id=5)
 
-            for missing_club in NIF_INTEGERATION_CLUBS_MISSING:
+            # Add replacements for excluded clubs
+            for missing_club in NIF_INTEGRATION_GROUPS_AS_CLUBS:
                 clubs.append(missing_club)
 
+            # Remove excluded clubs
+            clubs = [x for x in clubs if x not in NIF_INTEGRATION_EXCLUDE_CLUBS]
             self.log.info('Got {} integration users'.format(len(clubs)))
 
-            # Setup each integration user from list of integers
+            # Setup each integration user from list of orgs (integers)
             for club_id in list(set(clubs)):
 
                 try:
-                    if club_id not in NIF_INTEGERATION_CLUBS_EXCLUDE:
-                        integration_users.append(
-                            NifIntegrationUser(club_id=club_id,
-                                               create_delay=0))
-                        self.club_list.append(club_id)
-
-                    elif club_id in NIF_INTEGERATION_CLUBS_EXCLUDE:
-                        integration_users.append(
-                            NifIntegrationUser(club_id=(NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING[club_id]),
-                                               create_delay=0))
-                        self.club_list.append(NIF_INTEGRATION_GROUPS_AS_CLUBS_MAPPING[club_id])
-
+                    integration_users.append(NifIntegrationUser(club_id=club_id, create_delay=0))
+                    self.club_list.append(club_id)
                     time.sleep(0.2)
 
                 except NifIntegrationUserError as e:
