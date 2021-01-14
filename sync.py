@@ -37,6 +37,7 @@ from settings import (
     NIF_SYNC_MAX_ERRORS,
     NIF_SYNC_TYPES
 )
+from notifications import send_email
 
 
 class FakeSemaphore(object):
@@ -285,6 +286,7 @@ class NifSync(threading.Thread):
                 self.log.debug('Shutting down scheduler')
         except:
             self.log.error('Could not shut down scheduler')
+            send_email(subject='Sync shutdown failed', message='Sync could not shut down scheduler, line 289, for user {}'.format(self.username))
             pass
 
     @property
@@ -350,6 +352,8 @@ class NifSync(threading.Thread):
         # Check if too many errors
         if self.sync_errors >= NIF_SYNC_MAX_ERRORS:
             self.state.set_state(mode=self.state.mode, state='terminated', reason='too many errors')
+            send_email(subject='Sync shutdown', message='Sync shut down scheduler, line 355, too many errors for user {}'.format(self.username))
+
             self._shutdown()  # because setting stopper propagates to all!
 
         if isinstance(self.stopper, threading.Event):
