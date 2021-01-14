@@ -22,6 +22,8 @@ from settings import (
     STREAM_LOG_FILE
 )
 
+from notifications import send_email
+
 from pathlib import Path
 from app_logger import AppLogger
 
@@ -290,6 +292,8 @@ class NifStream:
             self.restarts += 1
             if self.restarts > self.max_restarts:
                 self.log.error('Too many retries')
+                send_email(subject='Stream shutdown', message='Stream pymongo error shut down, line 295, too many restarts\n\r{}'.format(e))
+
                 pass
             else:
                 self.run()
@@ -300,6 +304,7 @@ class NifStream:
             self.restarts += 1
             if self.restarts > self.max_restarts:
                 self.log.error('Too many restarts: {}'.format(self.restarts))
+                send_email(subject='Stream errors', message='Stream, line 307, too many restarts\n\r{}'.format(e))
 
                 if not self.token_reset:
                     self.log.error('Resetting resume token')
