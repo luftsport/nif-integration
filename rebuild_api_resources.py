@@ -3,7 +3,8 @@ from settings import (
     ACLUBU,
     ACLUBP,
     NLF_ORG_STRUCTURE,
-    API_HEADERS,API_URL,
+    API_HEADERS,
+    API_URL,
     NLF_ORG_STRUCTURE
 )
 import requests
@@ -57,6 +58,7 @@ class NifRebuildResources:
         if resp.status_code == 200:
             return True, resp.json()
         else:
+            print(resp.text)
             return False, {}
 
     def _insert(self, payload, resource):
@@ -68,10 +70,11 @@ class NifRebuildResources:
         if resp.status_code == 201:
             return True, resp.json()
         else:
+            print(resp.text)
             try:
                 print(resp.json())
             except:
-                pass
+                print(resp.text)
             return False, {}
 
     def _delete_resource(self, resource):
@@ -158,7 +161,16 @@ class NifRebuildResources:
         # Needs to have NLF
         for k in list(NLF_ORG_STRUCTURE.keys()):
             clubs.append({'Id': k, 'OrgTypeId': 5})
-        # Atna, Borgen, KS, Nordby, NLF, Testklubb, Bø
+        # Atna, Borgen, KS, Nordby, Testklubb, Bø, NLF
+        """
+           512430: 781765, Testklubb IR 
+           20822: 61726, Krigsskolen, Idrettslag 
+           19958: 874011, Nordby Idrettslag 
+           21921: 861435, Atna Idrettslag 
+           852558: 852558, Borgen IL
+           27890: 908228 Bø Idrettslag
+
+           """
         for xtra in [861435, 852558, 61726, 874011, 376, 781765, 908228]:
             clubs.append({'Id': xtra, 'OrgTypeId': 5})
 
