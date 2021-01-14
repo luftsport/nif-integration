@@ -494,6 +494,11 @@ class NifStream:
 
             try:
                 rapi_json = rapi.json()
+
+                # Add merged to for all merged from - even if error!
+                if len(change.merged_from) > 0:
+                    self._merge_user_to(rapi_json['id'], change.merged_from)
+
                 if '_issues' in rapi_json:
                     return False, rapi_json['_issues']
             except Exception as e:
